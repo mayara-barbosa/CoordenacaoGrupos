@@ -8,6 +8,7 @@ package coordenacaogrupos;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -18,19 +19,32 @@ import java.net.MulticastSocket;
  */
 public class Usuario {
     
+    private static MulticastSocket multiSocket;
+   
     public static void main(String [] args) throws IOException{
-    
-    byte[] sendData = new byte[1024];
-		byte[] receiveData = new byte[1024];
-		BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		MulticastSocket mSocket = new MulticastSocket(3333);
-		String group = "224.0.0.1";		
-		mSocket.joinGroup(InetAddress.getByName(group));
-		
-		mSocket.receive(receivePacket);
-		System.out.println(new String(receivePacket.getData(), receivePacket.getOffset(),
-				receivePacket.getLength()));
+        
+               
+         try {
+		String grupo = "224.0.0.1";
+		InetAddress server = InetAddress.getLocalHost();
+		multiSocket = new MulticastSocket(3333);
+		multiSocket.joinGroup(InetAddress.getByName(grupo));
+
+		while (true) {
+                    byte[] buffer = new byte[1024];
+                    DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+			multiSocket.receive(receivePacket);
+			String message = new String(receivePacket.getData(), receivePacket.getOffset(), receivePacket.getLength(), "UTF-8");
+                        
+			byte[] sendMsg = new String(ManagementFactory.getRuntimeMXBean().getName()).getBytes();
+				
+			DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, server, Integer.parseInt(message));
+			multiSocket.send(sendPacket);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
 		
     }
 }
