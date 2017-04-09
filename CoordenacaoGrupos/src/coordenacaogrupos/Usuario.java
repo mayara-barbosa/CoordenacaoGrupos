@@ -35,8 +35,7 @@ public class Usuario {
                     DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
 			multiSocket.receive(receivePacket);
 			String message = new String(receivePacket.getData(), receivePacket.getOffset(), receivePacket.getLength(), "UTF-8");
-                        
-			byte[] sendMsg = new String(ManagementFactory.getRuntimeMXBean().getName()).getBytes();
+                        byte[] sendMsg = new String(ManagementFactory.getRuntimeMXBean().getName()).getBytes();
 				
 			DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, server, Integer.parseInt(message));
 			multiSocket.send(sendPacket);
