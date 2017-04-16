@@ -19,50 +19,40 @@ import java.util.Scanner;
  */
 public class Coordenador {
     
-   	public static DatagramSocket unicastSocket;
-        private static DatagramPacket packet;
-	public static ArrayList<String> msg = new ArrayList<>();
-	private static byte[] buffer;
+   	
+	public static void main(String[] args) throws IOException, InterruptedException {
 	
-
-	public static void main(String[] args) throws InterruptedException {
-		
-            try {
-                    unicastSocket = new DatagramSocket();
-                     InetAddress grupo = InetAddress.getByName("224.0.0.1");
-
-                    while (true) {
-                    	buffer = new String(Integer.toString(unicastSocket.getLocalPort())).getBytes();
-			packet = new DatagramPacket(buffer, buffer.length, grupo, 3333);
-
-			Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-                            try {
-				unicastSocket.send(packet);
-				buffer = new byte[1024];
-				packet = new DatagramPacket(buffer, buffer.length);
-				unicastSocket.receive(packet);
-
-				String response = new String(packet.getData(), packet.getOffset(), packet.getLength(), "UTF-8");
-						msg.add(response);
-				} catch (Exception e) {
-                                    e.printStackTrace();
-				}
-			}
-				});
+            MulticastSocket multiSocket = new MulticastSocket();
+		byte[] send = new byte[1024];
+		byte[] receiveData = new byte[1024];
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		String group = "224.0.0.2";
+                int port;
+                DatagramSocket socket = new DatagramSocket(5555);
+                socket.setSoTimeout(1000);
+                port = 5555;
+                send = Integer.toString(port).getBytes();
+                System.out.println(port);
+                
+		DatagramPacket pacote = new DatagramPacket(send, send.length,InetAddress.getByName(group) , 3333);
+		multiSocket.send(pacote);
+                int users =0;
+                while(true){
+                    try{
+                        Thread.sleep(5000);
+                        socket.receive(receivePacket);
+                        String resposta = new String(receivePacket.getData(), receivePacket.getOffset(),
+                                    receivePacket.getLength());
+                        System.out.println(resposta);
+                        users++;
+                    }catch(Exception ex){
+                        System.out.println("Usuarios conectados: "+users);
+                        break;
+                    }
+                    
 				
-			t.start();
-			t.join(10000);
-				
-								
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-        
-				
-	}
+                }
+        }
 
     
 }

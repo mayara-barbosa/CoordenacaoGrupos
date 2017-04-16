@@ -24,25 +24,28 @@ public class Usuario {
     public static void main(String [] args) throws IOException{
         
                
-         try {
-		String grupo = "224.0.0.1";
-		InetAddress server = InetAddress.getLocalHost();
-		multiSocket = new MulticastSocket(3333);
-		multiSocket.joinGroup(InetAddress.getByName(grupo));
+        int port;
+        InetAddress ip;
+	byte[] sendData = new byte[1024];
+	byte[] receiveData = new byte[1024];
+	BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+        DatagramPacket sendPacket; new DatagramPacket(sendData,sendData.length);
+	MulticastSocket mSocket = new MulticastSocket(3333);
+	String group = "224.0.0.2";		
+	mSocket.joinGroup(InetAddress.getByName(group));
+	mSocket.receive(receivePacket);
+                
+            
+        String resposta = new String(receivePacket.getData(), receivePacket.getOffset(),
+				     receivePacket.getLength());
+        port = Integer.parseInt(resposta);
+                
+        String id = ManagementFactory.getRuntimeMXBean().getName();
+        sendData = id.getBytes();
+	DatagramPacket pacote = new DatagramPacket(sendData, sendData.length,receivePacket.getAddress() , port);
+        mSocket.send(pacote);
 
-		while (true) {
-                    byte[] buffer = new byte[1024];
-                    DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
-			multiSocket.receive(receivePacket);
-			String message = new String(receivePacket.getData(), receivePacket.getOffset(), receivePacket.getLength(), "UTF-8");
-                        byte[] sendMsg = new String(ManagementFactory.getRuntimeMXBean().getName()).getBytes();
-				
-			DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, server, Integer.parseInt(message));
-			multiSocket.send(sendPacket);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
         
 		
     }

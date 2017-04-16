@@ -5,29 +5,11 @@
  */
 package coordenacaogrupos;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 
 /**
  *
  * @author Mayara
  */
-public class CoordenacaoGrupos implements Runnable{
-    
-    private static DatagramSocket server = Coordenador.unicastSocket;
+public class CoordenacaoGrupos {    
 
-	@Override
-	public void run() {
-            while (true) {
-                byte[] b = new byte[256];
-                DatagramPacket packet = new DatagramPacket(b, b.length);
-		try {
-                    server.receive(packet);
-                    String resposta = new String(packet.getData(), packet.getOffset(), packet.getLength(), "UTF-8");
-				
-		} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
 }
