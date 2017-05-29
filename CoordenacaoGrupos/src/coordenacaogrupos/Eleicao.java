@@ -5,11 +5,20 @@
  */
 package coordenacaogrupos;
 
+import java.io.IOException;
+
 
 /**
  *
  * @author Mayara
  */
-public class CoordenacaoGrupos {    
+public class Eleicao {    
+    
+    public static void main(String [] args) throws IOException, InterruptedException{
+    
+        
+        
+                
+    }	
 
 }
